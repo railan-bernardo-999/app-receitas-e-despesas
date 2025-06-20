@@ -1,50 +1,93 @@
-# Welcome to your Expo app 👋
+# 📱 Finance Tracker - Gerenciador de Receitas e Gastos Pessoais  
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+<!-- ![Capa do Projeto](https://via.placeholder.com/800x400?text=Finance+Tracker+App) *(adicione uma imagem real depois)*   -->
 
-## Get started
+## 📌 Sobre o Projeto  
 
-1. Install dependencies
+O **Finance Tracker** é um aplicativo móvel simples desenvolvido para ajudar no controle financeiro pessoal, permitindo registrar receitas e despesas de forma rápida.  
 
-   ```bash
-   npm install
-   ```
+**Status do Projeto:** Em desenvolvimento ⚠️  
+*(Este projeto foi criado com fins de estudo para praticar React Native e Expo SQLite)*  
 
-2. Start the app
+---
 
-   ```bash
-   npx expo start
-   ```
+## ✨ Funcionalidades Atuais  
 
-In the output, you'll find options to open the app in a
+✅ **Cadastro de Transações**  
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- Adicione receitas (entradas de dinheiro)  
+- Adicione despesas (gastos)  
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+📊 **Visão Geral Financeira**  
 
-## Get a fresh project
+- Dois cards exibem:  
+  - **Total de Receitas** no mês atual  
+  - **Total de Gastos** no mês atual  
+  - **Tabela** com a listagem dos lançamentos  
 
-When you're ready, run:
+---
 
-```bash
-npm run reset-project
-```
+## 🛠️ Tecnologias Utilizadas  
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+- **React Native** (Framework para desenvolvimento mobile)  
+- **Expo** (Plataforma para desenvolvimento e build)  
+- **expo-sqlite** (Banco de dados SQLite para armazenamento local)  
 
-## Learn more
+---
 
-To learn more about developing your project with Expo, look at the following resources:
+## 🔧 Pré-requisitos e Como Executar  
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+1. **Instale o Node.js** (v16 ou superior)  
+2. **Instale o Expo CLI** globalmente:  
 
-## Join the community
+   ```bash  
+   npm install -g expo-cli  
+   ```  
 
-Join our community of developers creating universal apps.
+3. **Clone o repositório** (se aplicável)  
+4. **Instale as dependências:**  
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+   ```bash  
+   npm install  
+   ```  
+
+5. **Execute o projeto:**  
+
+   ```bash  
+   npm run android  
+   ```  
+
+6. Use o app **Expo Go** (disponível na Play Store/App Store) para testar no celular ou um emulador.  
+
+---
+
+## 📝 Próximas Melhorias (To-Do)  
+
+🔲 **Categorização de gastos** (ex: alimentação, transporte)  
+🔲 **Gráficos mensais/anuais** (para visualização financeira)  
+🔲 **Exportar dados** (para planilhas)  
+🔲 **Autenticação de usuário**  
+
+---
+
+## 🤝 Como Contribuir  
+
+Este projeto é aberto para sugestões! Se quiser contribuir:  
+
+1. Faça um Fork do projeto  
+2. Crie uma branch (`git checkout -b feature/nova-funcionalidade`)  
+3. Commit suas mudanças (`git commit -m 'Adiciona nova funcionalidade'`)  
+4. Push para a branch (`git push origin feature/nova-funcionalidade`)  
+5. Abra um Pull Request  
+
+---
+
+## 📄 Licença  
+
+Este projeto está sob a licença **MIT**.
+
+---  
+
+Feito com ❤️ por [Railan Bernardo](https://github.com/railan-bernardo-999)
+
+---  
