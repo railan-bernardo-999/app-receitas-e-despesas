@@ -8,6 +8,7 @@ import {
     FlatList,
     Modal,
     Pressable,
+    ScrollView,
     StyleSheet,
     Text,
     TextInput,
@@ -107,128 +108,131 @@ export default function HomeScreen() {
     }, [isReady]);
 
     return (
-        <View style={styles.container}>
-            <View style={[{ backgroundColor: "rgba(0,0,0,0.8)", padding: 20, backdropFilter: "blur(7px)" }]}></View>
-            <View style={styles.containerFull}>
-                <View style={styles.sectionTitle}>
-                    <Text style={styles.titleText}>Gerenciador de gastos</Text>
-                </View>
-                <View style={styles.grid}>
-                    <View style={[styles.cardInfo, styles.bgRed]}>
-                        <Text style={[styles.cardText]}>Despesas</Text>
-                        <Text style={[styles.cardText, styles.cardTextMedium]}>{formatCurrency(totals.despesas)}</Text>
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+            <View style={[styles.container, { paddingVertical: 65, maxHeight: "100%" }]}>
+                {/* <View style={[{ backgroundColor: "rgba(0,0,0,0.8)", padding: 35, backdropFilter: "blur(7px)" }]}></View> */}
+                <View style={[styles.containerFull, { height: "100%" }]}>
+                    <View style={styles.sectionTitle}>
+                        <Text style={styles.titleText}>Finanças</Text>
                     </View>
-                    <View style={[styles.cardInfo, styles.bgGreen]}>
-                        <Text style={[styles.cardText]}>Receitas</Text>
-                        <Text style={[styles.cardText, styles.cardTextMedium]}>{formatCurrency(totals.receitas)}</Text>
+                    <View style={styles.grid}>
+                        <View style={[styles.cardInfo, styles.bgRed]}>
+                            <Text style={[styles.cardText]}>Despesas</Text>
+                            <Text style={[styles.cardText, styles.cardTextMedium]}>{formatCurrency(totals.despesas)}</Text>
+                        </View>
+                        <View style={[styles.cardInfo, styles.bgGreen]}>
+                            <Text style={[styles.cardText]}>Receitas</Text>
+                            <Text style={[styles.cardText, styles.cardTextMedium]}>{formatCurrency(totals.receitas)}</Text>
+                        </View>
                     </View>
-                </View>
-                <View style={styles.containerTable}>
+                    {/* lançamentos */}
+                    <View style={{ paddingVertical: 16, marginTop: 20 }}>
+                        <Text style={styles.titleList}>Lançamentos</Text>
+                    </View>
                     {/* cabeçalho */}
-                    <View style={[styles.row, styles.header]}>
+                    <View style={styles.containerTable}>
+                        {/* <View style={[styles.row, styles.header]}>
                         <Text style={[styles.cell, styles.headerText]}>Tipo</Text>
                         <Text style={[styles.cell, styles.headerText]}>Valor</Text>
                         <Text style={[styles.cell, styles.headerText]}>Data</Text>
-                    </View>
-                    {/* linhas da tabela */}
-                    {transactions.length > 0 ? (
-                        <FlatList
-                            data={transactions}
-                            keyExtractor={(item) => item.id.toString()} // Garanta que o id seja string
-                            renderItem={({ item }) => (
-                                <View style={[
-                                    styles.row,
-                                    {
-                                        backgroundColor: item.type === "Despesa" ? "#f88e8eba" : "#91ff9ab5"
-                                    }
-                                ]}>
-                                    <Text style={styles.cell}>{item.type}</Text>
-                                    <Text style={styles.cell}>{formatCurrency(item.value)}</Text>
-                                    <Text style={styles.cell}>{formatDate(item.date)}</Text>
-                                </View>
-                            )}
-                            ListEmptyComponent={() => (
-                                <View style={styles.emptyContainer}>
-                                    <Text style={styles.emptyText}>--</Text>
-                                </View>
-                            )}
-                        />
-                    ) : (
-                        <View style={styles.emptyContainer}>
-                            <Text style={styles.emptyText}>--</Text>
-                        </View>
-                    )}
-                </View>
-                <TouchableOpacity style={styles.fab} onPress={() => setModalVisible(true)}>
-                    <Feather name="plus" size={28} color="#fff" />
-                </TouchableOpacity>
-
-                {/* modal */}
-                <SafeAreaProvider>
-                    <SafeAreaView style={styles.fullscreen}>
-                        <Modal
-                            animationType="slide"
-                            transparent={true}
-                            visible={modalVisible}
-                            onRequestClose={() => setModalVisible(false)}>
-                            <View style={styles.overlay}>
-                                <View style={styles.modalView}>
-                                    <Text style={styles.modalText}>Registrar</Text>
-
-                                    <View style={styles.pickerWrapper}>
-                                        <Picker
-                                            selectedValue={selectedValue}
-                                            onValueChange={(itemValue) => setSelectedValue(itemValue)}
-                                            style={styles.picker}
-                                        >
-                                            <Picker.Item label="Receita" value="Receita" />
-                                            <Picker.Item label="Despesa" value="Despesa" />
-                                        </Picker>
+                    </View> */}
+                        {/* linhas da tabela */}
+                        {transactions.length > 0 ? (
+                            <FlatList
+                                style={[{ backgroundColor: "#FFF", borderRadius: 20, padding: 16, boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.1)" }]}
+                                data={transactions}
+                                keyExtractor={(item) => item.id.toString()} // Garanta que o id seja string
+                                renderItem={({ item }) => (
+                                    <View style={[{ flexDirection: "row", justifyContent: "space-between", paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: "#F2F2F2" }]}>
+                                        <View style={[{ width: "50%", flexDirection: "column" }]}>
+                                            <Text style={[styles.cell, { textAlign: "left", color: "#000", fontWeight: 700, fontSize: 18 }]}>{item.type}</Text>
+                                            <Text style={[{ fontSize: 14, color: "#444", textAlign: "left" }]}>{formatDate(item.date)}</Text>
+                                        </View>
+                                        <View style={[{ width: "50%", justifyContent: "flex-end" }]}>
+                                            <Text style={[styles.cell, { textAlign: "right", fontSize: 26, fontWeight: 700 }, { color: `${item.type === "Despesa" ? '#f88e8eba' : '#91ff9ab5'}` }]}>{item.type === "Despesa" ? '- ' : '+ '}{formatCurrency(item.value)}</Text>
+                                        </View>
                                     </View>
-                                    <TextInput
-                                        style={styles.input}
-                                        placeholder="Valor"
-                                        value={value}
-                                        onChangeText={setValue}
-                                        keyboardType="numeric"
-                                    />
-
-                                    <View style={styles.boxGroup}>
-                                        <Pressable style={[styles.button, styles.bgBlue]} onPress={saveTransaction}>
-                                            <Text style={styles.buttonText}>Salvar</Text>
-                                        </Pressable>
-
-                                        <Pressable
-                                            style={[styles.button, styles.bgRed]}
-                                            onPress={() => setModalVisible(false)}>
-                                            <Text style={styles.buttonText}>Cancelar</Text>
-                                        </Pressable>
+                                )}
+                                ListEmptyComponent={() => (
+                                    <View style={styles.emptyContainer}>
+                                        <Text style={styles.emptyText}>--</Text>
                                     </View>
-                                </View>
+                                )}
+                            />
+                        ) : (
+                            <View style={styles.emptyContainer}>
+                                <Text style={styles.emptyText}>--</Text>
                             </View>
-                        </Modal>
-                    </SafeAreaView>
-                </SafeAreaProvider>
-                {/* end modal */}
+                        )}
+                    </View>
+                    <TouchableOpacity style={styles.fab} onPress={() => setModalVisible(true)}>
+                        <Feather name="plus" size={28} color="#fff" />
+                    </TouchableOpacity>
+
+                    {/* modal */}
+                    <SafeAreaProvider>
+                        <SafeAreaView style={styles.fullscreen}>
+                            <Modal
+                                animationType="slide"
+                                transparent={true}
+                                visible={modalVisible}
+                                onRequestClose={() => setModalVisible(false)}>
+                                <View style={styles.overlay}>
+                                    <View style={styles.modalView}>
+                                        <Text style={styles.modalText}>Registrar</Text>
+
+                                        <View style={styles.pickerWrapper}>
+                                            <Picker
+                                                selectedValue={selectedValue}
+                                                onValueChange={(itemValue) => setSelectedValue(itemValue)}
+                                                style={styles.picker}
+                                            >
+                                                <Picker.Item label="Receita" value="Receita" />
+                                                <Picker.Item label="Despesa" value="Despesa" />
+                                            </Picker>
+                                        </View>
+                                        <TextInput
+                                            style={styles.input}
+                                            placeholder="Valor"
+                                            value={value}
+                                            onChangeText={setValue}
+                                            keyboardType="numeric"
+                                        />
+
+                                        <View style={styles.boxGroup}>
+                                            <Pressable style={[styles.button, styles.bgBlue]} onPress={saveTransaction}>
+                                                <Text style={styles.buttonText}>Salvar</Text>
+                                            </Pressable>
+
+                                            <Pressable
+                                                style={[styles.button, styles.bgRed]}
+                                                onPress={() => setModalVisible(false)}>
+                                                <Text style={styles.buttonText}>Cancelar</Text>
+                                            </Pressable>
+                                        </View>
+                                    </View>
+                                </View>
+                            </Modal>
+                        </SafeAreaView>
+                    </SafeAreaProvider>
+                    {/* end modal */}
+                </View>
+                {/* <View style={[{ backgroundColor: "rgba(0,0,0,0.8)", padding: 35, backdropFilter: "blur(7px)" }]}></View> */}
             </View>
-            <View style={[{ backgroundColor: "rgba(0,0,0,0.8)", padding: 25, backdropFilter: "blur(7px)" }]}></View>
-        </View>
+        </ScrollView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#FFFFFF",
-        // alignItems: "center",
-        // justifyContent: "center"
+        backgroundColor: "#000",
     },
     containerFull: {
         flex: 1,
         padding: 16,
         backgroundColor: "#FFFFFF",
-        // alignItems: "center",
-        // justifyContent: "center"
+        borderRadius: 30
     },
     boxGroup: {
         flexDirection: "row",
@@ -236,45 +240,52 @@ const styles = StyleSheet.create({
     },
     sectionTitle: {
         padding: 16,
-        backgroundColor: "#F8F8F8",
+        // backgroundColor: "#F8F8F8",
         marginBottom: 16,
         marginTop: 10,
         borderRadius: 8
     },
     titleText: {
-        fontSize: 20,
-        fontWeight: 500,
+        fontSize: 45,
+        fontWeight: 700,
+        color: "#000",
+    },
+    titleList: {
+        fontSize: 30,
+        fontWeight: 700,
         color: "#000",
     },
     grid: {
-        gridAutoColumns: "2/12",
-        gap: 12
+        flexDirection: "row",
+        gap: 16
     },
     cardInfo: {
         padding: 16,
+        width: "48%",
         flexDirection: "column",
-        borderRadius: 16
+        borderRadius: 16,
     },
     bgRed: {
-        backgroundColor: "#f51111"
+        backgroundColor: "rgba(255, 95, 93, 0.5)"
     },
     bgGreen: {
-        backgroundColor: "#1c9e0b"
+        backgroundColor: "#94F2D0"
     },
     bgBlue: {
         backgroundColor: "#2593fa"
     },
     cardText: {
-        color: "#FFF",
+        color: "#000000",
         fontSize: 18,
+        fontWeight: 700
     },
     cardTextMedium: {
-        fontWeight: 500,
+        fontWeight: 800,
     },
     containerTable: {
-        marginTop: 40,
-        borderWidth: 1,
-        borderColor: '#ccc',
+        marginTop: 20,
+        // borderWidth: 1,
+        // borderColor: '#ccc',
         borderRadius: 6,
     },
     row: {
