@@ -21,6 +21,7 @@ type TableTypes = {
     id: string;
     type: string;
     value: number;
+    text: string;
     date: string;
 }
 
@@ -34,6 +35,7 @@ export default function HomeScreen() {
     const [transactions, setTransactions] = useState<TableTypes[]>([]);
     const [modalVisible, setModalVisible] = useState(false);
     const [value, setValue] = useState('');
+    const [text, setText] = useState('');
     const [selectedValue, setSelectedValue] = useState('Receita');
     const [totals, setTotals] = useState<MonthlyTotals>({ receitas: 0, despesas: 0 });
 
@@ -87,10 +89,12 @@ export default function HomeScreen() {
             await addTransaction(
                 selectedValue,
                 numericValue,
+                text,
                 new Date().toISOString()
             );
             setModalVisible(false);
-            setSelectedValue('');
+            // setSelectedValue('');
+            setText('');
             setValue('');
             await loadData();
             await loadTotals();
@@ -110,7 +114,6 @@ export default function HomeScreen() {
     return (
         <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
             <View style={[styles.container, { paddingVertical: 65, maxHeight: "100%" }]}>
-                {/* <View style={[{ backgroundColor: "rgba(0,0,0,0.8)", padding: 35, backdropFilter: "blur(7px)" }]}></View> */}
                 <View style={[styles.containerFull, { height: "100%" }]}>
                     <View style={styles.sectionTitle}>
                         <Text style={styles.titleText}>Finanças</Text>
@@ -129,14 +132,8 @@ export default function HomeScreen() {
                     <View style={{ paddingVertical: 16, marginTop: 20 }}>
                         <Text style={styles.titleList}>Lançamentos</Text>
                     </View>
-                    {/* cabeçalho */}
+                    {/* lista */}
                     <View style={styles.containerTable}>
-                        {/* <View style={[styles.row, styles.header]}>
-                        <Text style={[styles.cell, styles.headerText]}>Tipo</Text>
-                        <Text style={[styles.cell, styles.headerText]}>Valor</Text>
-                        <Text style={[styles.cell, styles.headerText]}>Data</Text>
-                    </View> */}
-                        {/* linhas da tabela */}
                         {transactions.length > 0 ? (
                             <FlatList
                                 style={[{ backgroundColor: "#FFF", borderRadius: 20, padding: 16, boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.1)" }]}
@@ -145,7 +142,7 @@ export default function HomeScreen() {
                                 renderItem={({ item }) => (
                                     <View style={[{ flexDirection: "row", justifyContent: "space-between", paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: "#F2F2F2" }]}>
                                         <View style={[{ width: "50%", flexDirection: "column" }]}>
-                                            <Text style={[styles.cell, { textAlign: "left", color: "#000", fontWeight: 700, fontSize: 18 }]}>{item.type}</Text>
+                                            <Text style={[styles.cell, { textAlign: "left", color: "#000", fontWeight: 700, fontSize: 18 }]}>{item.text}</Text>
                                             <Text style={[{ fontSize: 14, color: "#444", textAlign: "left" }]}>{formatDate(item.date)}</Text>
                                         </View>
                                         <View style={[{ width: "50%", justifyContent: "flex-end" }]}>
@@ -179,7 +176,7 @@ export default function HomeScreen() {
                                 onRequestClose={() => setModalVisible(false)}>
                                 <View style={styles.overlay}>
                                     <View style={styles.modalView}>
-                                        <Text style={styles.modalText}>Registrar</Text>
+                                        <Text style={styles.modalText}>Nova Transação</Text>
 
                                         <View style={styles.pickerWrapper}>
                                             <Picker
@@ -197,6 +194,13 @@ export default function HomeScreen() {
                                             value={value}
                                             onChangeText={setValue}
                                             keyboardType="numeric"
+                                        />
+                                        <TextInput
+                                            style={[styles.input, { height: 60 }]}
+                                            placeholder="Descrição"
+                                            value={text}
+                                            onChangeText={setText}
+                                            keyboardType="default"
                                         />
 
                                         <View style={styles.boxGroup}>
@@ -217,7 +221,6 @@ export default function HomeScreen() {
                     </SafeAreaProvider>
                     {/* end modal */}
                 </View>
-                {/* <View style={[{ backgroundColor: "rgba(0,0,0,0.8)", padding: 35, backdropFilter: "blur(7px)" }]}></View> */}
             </View>
         </ScrollView>
     );
@@ -240,7 +243,6 @@ const styles = StyleSheet.create({
     },
     sectionTitle: {
         padding: 16,
-        // backgroundColor: "#F8F8F8",
         marginBottom: 16,
         marginTop: 10,
         borderRadius: 8
@@ -371,9 +373,10 @@ const styles = StyleSheet.create({
     },
     modalText: {
         marginBottom: 15,
-        textAlign: 'center',
+        textAlign: 'left',
+        width: "100%",
         fontSize: 30,
-        fontWeight: 500
+        fontWeight: 600
     },
     input: {
         width: "100%",
@@ -382,7 +385,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         padding: 10,
         color: "#000",
-        borderColor: "#F8F8F8"
+        borderColor: "#F8F8F8",
     },
     buttonText: {
         color: '#fff',

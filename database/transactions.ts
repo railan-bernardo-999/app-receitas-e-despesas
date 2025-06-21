@@ -4,6 +4,7 @@ interface Transaction {
     id?: number;
     type: string;
     value: number;
+    text: string;
     date: string;
 }
 
@@ -12,12 +13,12 @@ interface MonthlyTotals {
   despesas: number;
 }
 
-export async function addTransaction(type: string, value: number, date: string): Promise<void> {
+export async function addTransaction(type: string, value: number, text: string, date: string): Promise<void> {
     const db = await getDatabase();
     try {
         await db.runAsync(
-            `INSERT INTO transactions (type, value, date) VALUES (?, ?, ?)`,
-            [type, value, date]
+            `INSERT INTO transactions (type, value, text, date) VALUES (?, ?, ?, ?)`,
+            [type, value, text, date]
         );
     } catch (error) {
         console.error('Erro ao inserir transação:', error);
