@@ -138,7 +138,7 @@ export default function HomeScreen() {
                             <FlatList
                                 style={[{ backgroundColor: "#FFF", borderRadius: 20, padding: 16, boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.1)" }]}
                                 data={transactions}
-                                keyExtractor={(item) => item.id.toString()} // Garanta que o id seja string
+                                keyExtractor={(item) => item.id.toString()} 
                                 renderItem={({ item }) => (
                                     <View style={[{ flexDirection: "row", justifyContent: "space-between", paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: "#F2F2F2" }]}>
                                         <View style={[{ width: "50%", flexDirection: "column" }]}>
