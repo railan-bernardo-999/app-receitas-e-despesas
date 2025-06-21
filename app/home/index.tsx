@@ -1,5 +1,4 @@
-import { addTransaction, getMonthlyTotals, getTransactions } from '@/database/transactions';
-import { useDatabase } from '@/hooks/useDatabase';
+import { TransactionProps, useTransactions } from '@/database/useTransactions';
 import { Feather } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
 import React, { useEffect, useState } from 'react';
@@ -17,22 +16,14 @@ import {
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
-type TableTypes = {
-    id: string;
-    type: string;
-    value: number;
-    text: string;
-    date: string;
-}
-
 interface MonthlyTotals {
     receitas: number;
     despesas: number;
 }
 
 export default function HomeScreen() {
-    const { isReady, error } = useDatabase();
-    const [transactions, setTransactions] = useState<TableTypes[]>([]);
+    const transactionDatabase = useTransactions();
+    const [transactions, setTransactions] = useState<TransactionProps[]>([]);
     const [modalVisible, setModalVisible] = useState(false);
     const [value, setValue] = useState('');
     const [text, setText] = useState('');
@@ -40,10 +31,10 @@ export default function HomeScreen() {
     const [totals, setTotals] = useState<MonthlyTotals>({ receitas: 0, despesas: 0 });
 
 
-    async function loadData() {
+    async function list() {
         try {
-            if (!isReady) return;
-            const data: any = await getTransactions();
+
+            const data: any = await transactionDatabase.list();
             setTransactions(data);
         } catch (error) {
             console.error('Erro ao carregar transações:', error);
@@ -52,7 +43,7 @@ export default function HomeScreen() {
 
     async function loadTotals() {
         try {
-            const monthlyTotals = await getMonthlyTotals();
+            const monthlyTotals = await transactionDatabase.getMonthlyTotals();
             setTotals(monthlyTotals);
         } catch (error) {
             console.error('Erro ao carregar totais:', error);
@@ -72,7 +63,7 @@ export default function HomeScreen() {
         });
     }
 
-    async function saveTransaction() {
+    async function store() {
         if (!selectedValue || !value) {
             Alert.alert('Preencha todos os campos!');
             return;
@@ -86,17 +77,17 @@ export default function HomeScreen() {
         }
 
         try {
-            await addTransaction(
-                selectedValue,
-                numericValue,
-                text,
-                new Date().toISOString()
-            );
+            await transactionDatabase.store({
+                type: selectedValue,
+                value: numericValue,
+                title: text,
+                date: new Date().toISOString()
+            });
             setModalVisible(false);
             // setSelectedValue('');
             setText('');
             setValue('');
-            await loadData();
+            await list();
             await loadTotals();
         } catch (error: any) {
             Alert.alert('Erro ao salvar', error.message);
@@ -105,27 +96,25 @@ export default function HomeScreen() {
 
 
     useEffect(() => {
-        if (isReady) {
-            loadData();
-            loadTotals();
-        }
-    }, [isReady]);
+        list();
+        loadTotals();
+    }, []);
 
     return (
-        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+         <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 0, backgroundColor: "#000" }}>
             <View style={[styles.container, { paddingVertical: 65, maxHeight: "100%" }]}>
                 <View style={[styles.containerFull, { height: "100%" }]}>
                     <View style={styles.sectionTitle}>
                         <Text style={styles.titleText}>Finanças</Text>
                     </View>
                     <View style={styles.grid}>
+                         <View style={[styles.cardInfo, styles.bgGreen]}>
+                            <Text style={[styles.cardText]}>Receitas</Text>
+                            <Text style={[styles.cardText, styles.cardTextMedium]}>{formatCurrency(totals.receitas)}</Text>
+                        </View>
                         <View style={[styles.cardInfo, styles.bgRed]}>
                             <Text style={[styles.cardText]}>Despesas</Text>
                             <Text style={[styles.cardText, styles.cardTextMedium]}>{formatCurrency(totals.despesas)}</Text>
-                        </View>
-                        <View style={[styles.cardInfo, styles.bgGreen]}>
-                            <Text style={[styles.cardText]}>Receitas</Text>
-                            <Text style={[styles.cardText, styles.cardTextMedium]}>{formatCurrency(totals.receitas)}</Text>
                         </View>
                     </View>
                     {/* lançamentos */}
@@ -138,15 +127,16 @@ export default function HomeScreen() {
                             <FlatList
                                 style={[{ backgroundColor: "#FFF", borderRadius: 20, padding: 16, boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.1)" }]}
                                 data={transactions}
-                                keyExtractor={(item) => item.id.toString()} 
+                                scrollEnabled={false}
+                                keyExtractor={(item) => item.id.toString()}
                                 renderItem={({ item }) => (
                                     <View style={[{ flexDirection: "row", justifyContent: "space-between", paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: "#F2F2F2" }]}>
                                         <View style={[{ width: "50%", flexDirection: "column" }]}>
-                                            <Text style={[styles.cell, { textAlign: "left", color: "#000", fontWeight: 700, fontSize: 18 }]}>{item.text}</Text>
+                                            <Text style={[styles.cell, { textAlign: "left", color: "#000", fontWeight: 700, fontSize: 18 }]}>{item.title}</Text>
                                             <Text style={[{ fontSize: 14, color: "#444", textAlign: "left" }]}>{formatDate(item.date)}</Text>
                                         </View>
                                         <View style={[{ width: "50%", justifyContent: "flex-end" }]}>
-                                            <Text style={[styles.cell, { textAlign: "right", fontSize: 26, fontWeight: 700 }, { color: `${item.type === "Despesa" ? '#f88e8eba' : '#91ff9ab5'}` }]}>{item.type === "Despesa" ? '- ' : '+ '}{formatCurrency(item.value)}</Text>
+                                            <Text style={[styles.cell, { textAlign: "right", fontSize: 22, fontWeight: 700 }, { color: `${item.type === "Despesa" ? '#f88e8eba' : '#91ff9ab5'}` }]}>{item.type === "Despesa" ? '- ' : '+ '}{formatCurrency(item.value)}</Text>
                                         </View>
                                     </View>
                                 )}
@@ -204,7 +194,7 @@ export default function HomeScreen() {
                                         />
 
                                         <View style={styles.boxGroup}>
-                                            <Pressable style={[styles.button, styles.bgBlue]} onPress={saveTransaction}>
+                                            <Pressable style={[styles.button, styles.bgBlue]} onPress={store}>
                                                 <Text style={styles.buttonText}>Salvar</Text>
                                             </Pressable>
 
@@ -242,17 +232,19 @@ const styles = StyleSheet.create({
         gap: 8,
     },
     sectionTitle: {
-        padding: 16,
+        padding: 0,
         marginBottom: 16,
         marginTop: 10,
         borderRadius: 8
     },
     titleText: {
-        fontSize: 45,
+        fontFamily: "Inter_700Bold",
+        fontSize: 35,
         fontWeight: 700,
         color: "#000",
     },
     titleList: {
+        fontFamily: "Inter_700Bold",
         fontSize: 30,
         fontWeight: 700,
         color: "#000",
@@ -268,21 +260,22 @@ const styles = StyleSheet.create({
         borderRadius: 16,
     },
     bgRed: {
-        backgroundColor: "rgba(255, 95, 93, 0.5)"
+        backgroundColor: "#EF5444"
     },
     bgGreen: {
-        backgroundColor: "#94F2D0"
+        backgroundColor: "#22C55E"
     },
     bgBlue: {
-        backgroundColor: "#2593fa"
+        backgroundColor: "#3B82F6"
     },
     cardText: {
-        color: "#000000",
+        color: "#fff",
         fontSize: 18,
         fontWeight: 700
     },
     cardTextMedium: {
-        fontWeight: 800,
+        fontFamily: "Inter_700Bold",
+        fontWeight: 700,
     },
     containerTable: {
         marginTop: 20,
@@ -304,7 +297,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#f0f0f0',
     },
     headerText: {
-        fontWeight: 'bold',
+        fontFamily: "Inter_700Bold",
+        fontWeight: 700,
     },
     fab: {
         position: "absolute",
@@ -355,6 +349,7 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     button: {
+        fontFamily: "Inter_500Medium",
         borderRadius: 20,
         padding: 10,
         elevation: 2,
@@ -367,16 +362,18 @@ const styles = StyleSheet.create({
         backgroundColor: '#2196F3',
     },
     textStyle: {
+        fontFamily: "Inter_700Bold",
         color: 'white',
-        fontWeight: 'bold',
+        fontWeight: 700,
         textAlign: 'center',
     },
     modalText: {
         marginBottom: 15,
         textAlign: 'left',
         width: "100%",
+        fontFamily: "Inter_700Bold",
         fontSize: 30,
-        fontWeight: 600
+        fontWeight: 700
     },
     input: {
         width: "100%",
@@ -386,11 +383,13 @@ const styles = StyleSheet.create({
         padding: 10,
         color: "#000",
         borderColor: "#F8F8F8",
+        fontFamily: "Inter_400Regular",
     },
     buttonText: {
         color: '#fff',
         textAlign: 'center',
-        fontWeight: 'bold',
+        fontFamily: "Inter_700Bold",
+        fontWeight: 700,
     },
     label: { fontSize: 18, marginBottom: 10 },
     pickerWrapper: {
@@ -409,6 +408,7 @@ const styles = StyleSheet.create({
         padding: 20,
     },
     emptyText: {
+        fontFamily: "Inter_400Regular",
         fontSize: 16,
         color: '#999',
     },
